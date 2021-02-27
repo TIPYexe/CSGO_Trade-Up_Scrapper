@@ -59,6 +59,15 @@ def extract_prices(event):
     btn_UpdatePrices['state'] = 'active'
     btn_UpdatePrices.bind("<Button-1>", extract_prices)
 
+    # activez butoanele pt cautarea de oferta
+    btn_risk1['state'] = 'active'
+    btn_risk1.bind("<Button-1>", lambda event, risk=1: search_offer(event, risk))
+    btn_risk2['state'] = 'active'
+    btn_risk2.bind("<Button-1>", lambda event, risk=2: search_offer(event, risk))
+    btn_risk3['state'] = 'active'
+    btn_risk3.bind("<Button-1>", lambda event, risk=3: search_offer(event, risk))
+
+
 
 # TODO:
 #   - sa fac si eu un fisier pentru constante (nume de fisiere and shit)
@@ -194,7 +203,6 @@ def search_offer(event, risk):
 
     #TODO:
     #   - fac calculele relevante pentru max loss si max win
-    #   - sa fac butoanele de risk inactive pana nu exista fisierul Skin_prices.xlsx
 
 window = tk.Tk()
 window.geometry('895x750')
@@ -279,6 +287,15 @@ btn_risk3 = tk.Button(frame, text="3", image=pixel, relief='solid', bd=0, backgr
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk3.place(x=800, y=310)
 btn_risk3.bind("<Button-1>", lambda event, risk=3: search_offer(event, risk))
+
+# daca fisierul cu preturile nu exista, programul nu poate cauta oferte
+if not path.exists('Files/Skin_prices.xlsx'):
+    btn_risk1['state'] = 'disabled'
+    btn_risk1.unbind("<Button-1>")
+    btn_risk2['state'] = 'disabled'
+    btn_risk2.unbind("<Button-1>")
+    btn_risk3['state'] = 'disabled'
+    btn_risk3.unbind("<Button-1>")
 
 # endregion
 
