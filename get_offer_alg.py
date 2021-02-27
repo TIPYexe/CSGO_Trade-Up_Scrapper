@@ -72,6 +72,7 @@ def cheapest_skin(skin_list, i):
     else:
         return -1
 
+
 def expensive_skin(skin_list, i):
     maxim = -1
     index = -1
@@ -88,6 +89,7 @@ def expensive_skin(skin_list, i):
     else:
         return -1
 
+
 # TODO:
 #   - trebuie sa adaug si procent de castig minim
 #   - sau sa sortez intr-un fel ofertele dupa castigul maxim, iar la categoria 3 sa intre top 33%
@@ -96,9 +98,6 @@ def expensive_skin(skin_list, i):
 
 def generate_offer(Cases, procent_min_win, procent_max_loss):
     best_deals = []
-    max_win = 0
-    max_loss = 0
-    nrr=0
     for case in Cases:
 
         # luam calitatile pe rand (FN, MW, FT, ...)
@@ -128,10 +127,11 @@ def generate_offer(Cases, procent_min_win, procent_max_loss):
                     cheap_skin_2 = cheapest_skin(case.byRarity[index_0], i + float_chance)
                     expensive_skin_2 = expensive_skin(case.byRarity[index_0], i + float_chance)
                     if cheap_skin_2 != -1 and expensive_skin_2 != -1:
-
-                        if float(cheap_skin_2.prices[i + float_chance]) >= trade_price * (1 + procent_min_win / 100)\
-                                and float(expensive_skin_2.prices[i + float_chance]) >= trade_price * (1 - procent_max_loss / 100):
-
+                        float(cheap_skin_2.prices[i + float_chance])
+                        float(expensive_skin_2.prices[i + float_chance])
+                        if float(cheap_skin_2.prices[i + float_chance]) / trade_price >= (
+                                1 - procent_max_loss / 100) and float(
+                                expensive_skin_2.prices[i + float_chance]) / trade_price >= (1 + procent_min_win / 100):
                             # case.name = numele cutiei din care sunt skin-urile
                             # cheap_skin = skin-ul de cumparat (cel mai ieftin de CALITATEA i si RARITATEA index_0-1)
                             # i = indicele calitatii la care sa il cumparam
@@ -167,7 +167,6 @@ def num_to_quality(number):
 
 
 def get_offer(prices_list, min_profit_procent, max_loss_procent):
-
     Cases = []
     db = xl.readxl(prices_list)
     sheet_names = db.ws_names
@@ -181,21 +180,21 @@ def get_offer(prices_list, min_profit_procent, max_loss_procent):
     best_deals = generate_offer(Cases, min_profit_procent, max_loss_procent)
 
     # returnez o oferta random din cele ce respecta procentele
-    #random_trade = random.randint(0, len(best_deals)-1)
+    # random_trade = random.randint(0, len(best_deals)-1)
 
-    return best_deals#[random_trade]
-
-#region Print in consola
-#'''
+    return best_deals  # [random_trade]
 
 
-best_deals = get_offer('Case_data_2.xlsx', 10, 0)
+# region Print in consola
+'''
 
+
+best_deals = get_offer('Case_data_2.xlsx', 100, 100)
 
 for deal in best_deals:
     index = -1
     for skin in deal[4]:
-        if skin.prices[deal[2] + 1] == 'N/A' or skin.prices[deal[2] + 1] == '':
+        if '.' not in skin.prices[deal[2]]:
             index = 1
 
     if index == -1:
@@ -213,6 +212,6 @@ for deal in best_deals:
         print('Skins to get:')
 
         for skin in deal[4]:
-            print(skin.name + ' ' + skin.weapon + ' ' + str(skin.prices[deal[2] + deal[3]]) + '$')
-#'''
-#endregion
+            print(skin.name + ' ' + skin.weapon + ' ' + str(skin.prices[deal[2]]) + '$')
+# '''
+# endregion
