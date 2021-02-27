@@ -9,6 +9,7 @@ import web_scrapper as cs_scrp
 import get_offer_alg as alg
 import save_to_db as save
 
+global skin_in, skin_out_1, skin_out_2, skin_out_3
 
 def updateDisplay(myString):
     displayVar.set(displayVar.get() + '\n' + myString)
@@ -74,11 +75,6 @@ def extract_prices(event):
     btn_risk3.bind("<Button-1>", lambda event, risk=3: search_offer(event, risk))
 
 
-
-# TODO:
-#   - sa fac si eu un fisier pentru constante (nume de fisiere and shit)
-
-
 def get_n_resize(skin_name):
     skin_mare = Image.open('Files/Skins/' + skin_name + '.png')
     skin_mare = skin_mare.resize((94, 71), Image.ANTIALIAS)
@@ -115,6 +111,7 @@ def search_offer(event, risk):
         deal = alg.get_offer('Files/Skin_prices.xlsx', 200, 100)
 
     # afisez cele 10 skinuri
+    global skin_in
     skin_in = get_n_resize(deal[1].weapon + ' ' + deal[1].name)
     print_trade_in(skin_in)
 
@@ -139,6 +136,7 @@ def search_offer(event, risk):
     skin_out_q = alg.num_to_quality(deal[2] + deal[3])
     if len(deal[4]) >= 1:
 
+        global skin_out_1
         skin_out_1 = get_n_resize(deal[4][0].weapon + ' ' + deal[4][0].name)
 
         if deal[4][0].prices[deal[2] + deal[3]] not in invalid_values:
@@ -153,6 +151,8 @@ def search_offer(event, risk):
         skin_out_data_1.place(x=605, y=390)
 
     if len(deal[4]) >= 2:
+
+        global skin_out_2
         skin_out_2 = get_n_resize(deal[4][1].weapon + ' ' + deal[4][1].name)
 
         if deal[4][1].prices[deal[2] + deal[3]] not in invalid_values:
@@ -167,6 +167,7 @@ def search_offer(event, risk):
         skin_out_data_2.place(x=605, y=505)
 
     if len(deal[4]) >= 3:
+        global skin_out_3
         skin_out_3 = get_n_resize(deal[4][2].weapon + ' ' + deal[4][2].name)
 
         if deal[4][2].prices[deal[2] + deal[3]] not in invalid_values:
@@ -190,9 +191,7 @@ def search_offer(event, risk):
     max_win_f = float(max_win.prices[deal[2] + deal[3]])
     total = round(float(price_0) * 10, 3)
 
-    print(max_loss.name, max_win.name)
-
-    select_risk = tk.Text(frame, font=('Montserrat Black', 22), bd=0, fg='gray34', bg='gray80', width=15, height=3)
+    select_risk = tk.Text(frame, font=('Montserrat Black', 21), bd=0, fg='gray34', bg='gray80', width=15, height=3)
     select_risk.tag_configure('center', justify='center')
     select_risk.insert('1.0', 'TOTAL: ' + str(total) + '$\n'
                        + 'MAX LOSS: ' + str(round(total - max_loss_f, 2)) + '$\n'
@@ -201,14 +200,6 @@ def search_offer(event, risk):
     select_risk.place(x=300, y=617)
     # endregion
 
-    # eroare intentionata care nu lasa functia sa se incheie
-    # daca s-ar incheia, variabilele locale pentru poze s-ar sterge, si implicit
-    # s-ar sterge si din interfata
-    a = ''
-    b = float(a)
-
-    #TODO:
-    #   - fac calculele relevante pentru max loss si max win
 
 window = tk.Tk()
 window.geometry('895x750')
@@ -279,17 +270,17 @@ select_risk.place(x=645, y=205)
 
 # region Butoane Risk
 
-btn_risk1 = tk.Button(frame, text="1", image=pixel, relief='solid', bd=0, activebackground='gold', fg='black',
+btn_risk1 = tk.Button(frame, text="1", image=pixel, relief='solid', bd=0, bg='gold', fg='black',
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk1.place(x=680, y=310)
 btn_risk1.bind("<Button-1>", lambda event, risk=1: search_offer(event, risk))
 
-btn_risk2 = tk.Button(frame, text="2", image=pixel, relief='solid', bd=0, activebackground='gold', fg='black',
+btn_risk2 = tk.Button(frame, text="2", image=pixel, relief='solid', bd=0, bg='gold', fg='black',
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk2.place(x=740, y=310)
 btn_risk2.bind("<Button-1>", lambda event, risk=2: search_offer(event, risk))
 
-btn_risk3 = tk.Button(frame, text="3", image=pixel, relief='solid', bd=0, activebackground='gold', fg='black',
+btn_risk3 = tk.Button(frame, text="3", image=pixel, relief='solid', bd=0, bg='gold', fg='black',
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk3.place(x=800, y=310)
 btn_risk3.bind("<Button-1>", lambda event, risk=3: search_offer(event, risk))
