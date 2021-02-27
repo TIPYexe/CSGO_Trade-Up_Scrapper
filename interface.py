@@ -43,7 +43,7 @@ def extract_prices(event):
     displayVar.set('')
     window.update()
 
-    # functia propriu-zisa
+    #functia propriu-zisa
     db = readxl('Files/Skin_names.xlsx')
     sheet_names = db.ws_names
 
@@ -60,11 +60,17 @@ def extract_prices(event):
     btn_UpdatePrices.bind("<Button-1>", extract_prices)
 
     # activez butoanele pt cautarea de oferta
+    btn_risk1.config(background='gold')
     btn_risk1['state'] = 'active'
     btn_risk1.bind("<Button-1>", lambda event, risk=1: search_offer(event, risk))
+
+    btn_risk2.config(bg='gold')
     btn_risk2['state'] = 'active'
     btn_risk2.bind("<Button-1>", lambda event, risk=2: search_offer(event, risk))
+
+    btn_risk3.config(bg='gold')
     btn_risk3['state'] = 'active'
+
     btn_risk3.bind("<Button-1>", lambda event, risk=3: search_offer(event, risk))
 
 
@@ -273,29 +279,37 @@ select_risk.place(x=645, y=205)
 
 # region Butoane Risk
 
-btn_risk1 = tk.Button(frame, text="1", image=pixel, relief='solid', bd=0, background='gold', fg='chocolate2',
+btn_risk1 = tk.Button(frame, text="1", image=pixel, relief='solid', bd=0, activebackground='gold', fg='black',
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk1.place(x=680, y=310)
 btn_risk1.bind("<Button-1>", lambda event, risk=1: search_offer(event, risk))
 
-btn_risk2 = tk.Button(frame, text="2", image=pixel, relief='solid', bd=0, background='gold', fg='chocolate2',
+btn_risk2 = tk.Button(frame, text="2", image=pixel, relief='solid', bd=0, activebackground='gold', fg='black',
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk2.place(x=740, y=310)
 btn_risk2.bind("<Button-1>", lambda event, risk=2: search_offer(event, risk))
 
-btn_risk3 = tk.Button(frame, text="3", image=pixel, relief='solid', bd=0, background='gold', fg='chocolate2',
+btn_risk3 = tk.Button(frame, text="3", image=pixel, relief='solid', bd=0, activebackground='gold', fg='black',
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk3.place(x=800, y=310)
 btn_risk3.bind("<Button-1>", lambda event, risk=3: search_offer(event, risk))
 
 # daca fisierul cu preturile nu exista, programul nu poate cauta oferte
 if not path.exists('Files/Skin_prices.xlsx'):
+    #btn_risk1.config(background='gray63')
     btn_risk1['state'] = 'disabled'
     btn_risk1.unbind("<Button-1>")
+
+
+    #btn_risk2.config(background='gray63')
     btn_risk2['state'] = 'disabled'
     btn_risk2.unbind("<Button-1>")
+
+
+    #btn_risk3.config(background='gray63')
     btn_risk3['state'] = 'disabled'
     btn_risk3.unbind("<Button-1>")
+
 
 # endregion
 
