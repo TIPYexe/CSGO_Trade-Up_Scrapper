@@ -123,6 +123,8 @@ def generate_offer(Cases, procent_min_win, procent_max_loss):
                     # calitate, sau cu una mai proasta.
                     float_chance = random.randint(0, 1)
 
+                    float_chance = 0
+
                     cheap_skin_2 = cheapest_skin(case.byRarity[index_0], i + float_chance)
                     expensive_skin_2 = expensive_skin(case.byRarity[index_0], i + float_chance)
                     if cheap_skin_2 != -1 and expensive_skin_2 != -1:
@@ -135,7 +137,8 @@ def generate_offer(Cases, procent_min_win, procent_max_loss):
                             # i = indicele calitatii la care sa il cumparam
                             # float_chance = indicele calitatii skin-ului/urilor care poate pica
                             # case.byRarity[index_0] = lista cu skin-ul/urile care pot pica
-                            best_deals.append([case.name, cheap_skin, i, float_chance, case.byRarity[index_0], cheap_skin_2, expensive_skin_2])
+                            best_deals.append([case.name, cheap_skin, i, float_chance, case.byRarity[index_0],
+                                               cheap_skin_2, expensive_skin_2])
 
     return best_deals
 
@@ -178,14 +181,15 @@ def get_offer(prices_list, min_profit_procent, max_loss_procent):
     best_deals = generate_offer(Cases, min_profit_procent, max_loss_procent)
 
     # returnez o oferta random din cele ce respecta procentele
-    random_trade = random.randint(0, len(best_deals)-1)
+    #random_trade = random.randint(0, len(best_deals)-1)
 
-    return best_deals[random_trade]
+    return best_deals#[random_trade]
 
 #region Print in consola
 #'''
 
-best_deals = get_offer('Case_data_2.xlsx', 1, 100)
+
+best_deals = get_offer('Case_data_2.xlsx', 10, 0)
 
 
 for deal in best_deals:
