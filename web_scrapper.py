@@ -94,7 +94,7 @@ def extract_from_cases(URL, text_Var, window):
             break
 
     elem_menu = button.findAll('li')  # accesez lista de elemente din dropdown_menu
-    elem_menu_set = set(elem_menu)  # o transform intr-o lista numarabila
+    elem_menu_set = set(elem_menu)
 
     print_to_log("Gata extractia din meniu", text_Var, window)
 
