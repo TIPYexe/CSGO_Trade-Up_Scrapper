@@ -1,7 +1,6 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 from pylightxl import readxl
-import os.path
 from os import path
 
 import price_scrapper as pricey
@@ -64,15 +63,15 @@ def extract_prices(event):
 # TODO:
 #   - sa fac si eu un fisier pentru constante (nume de fisiere and shit)
 
+
 def get_n_resize(skin_name):
     skin_mare = Image.open('Files/Skins/' + skin_name + '.png')
     skin_mare = skin_mare.resize((94, 71), Image.ANTIALIAS)
-    skin_in = ImageTk.PhotoImage(skin_mare)
-    return skin_in
+    skin = ImageTk.PhotoImage(skin_mare)
+    return skin
 
 
 def print_trade_in(skin_in):
-
     x = 15
     y = 390
 
@@ -86,15 +85,113 @@ def print_trade_in(skin_in):
         skin_in_label.place(x=x, y=y)
         x += 115
 
-    window.update()
 
 def search_offer(event, risk):
+    deal = []
+
     if risk == 1:
-        deal = alg.get_offer('Files/Skin_prices.xlsx', 17, 0)
+        # max_loss = 0 deci nu poate iesi in pierdere,
+        # dar de regula si castigurile sunt mici
+        deal = alg.get_offer('Files/Skin_prices.xlsx', 0, 0)
     if risk == 2:
-        deal = alg.get_offer('Files/Skin_prices.xlsx', 0, 0)
+        deal = alg.get_offer('Files/Skin_prices.xlsx', 100, 40)
     if risk == 3:
-        deal = alg.get_offer('Files/Skin_prices.xlsx', 0, 0)
+        # max_loss = 100 sunt dispus sa pierd toti banii intr-un trade (imposibil oricum)
+        deal = alg.get_offer('Files/Skin_prices.xlsx', 200, 100)
+
+    #skin_in_name.set(deal[1].weapon + ' ' + deal[1].name)
+
+    # afisez cele 10 skinuri
+    skin_in = get_n_resize(deal[1].weapon + ' ' + deal[1].name)
+    print_trade_in(skin_in)
+
+    # afisez date despre skinul de cumparat
+    skin_in_q = alg.num_to_quality(deal[2])
+
+    invalid_value = ['N/A', ' ', '']
+
+    if deal[1].prices[deal[2]] not in invalid_value:
+        price_0 = str(round(float(deal[1].prices[deal[2]]), 2))
+    else:
+        price_0 = '-'
+
+    skin_in_data = tk.Label(frame, image=skin_in,
+                            text='   PRICE\n   ' + price_0 + '$\n   Q: ' + skin_in_q,
+                            font=('Montserrat Black', 16), fg='Dark green', background='SpringGreen3', width=221,
+                            height=108, compound='left')
+    skin_in_data.place(x=15, y=620)
+
+    # region skin_out
+
+    skin_out_q = alg.num_to_quality(deal[2] + deal[3])
+    if len(deal[4]) >= 1:
+
+        skin_out_1 = get_n_resize(deal[4][0].weapon + ' ' + deal[4][0].name)
+
+        if deal[4][0].prices[deal[3]] not in invalid_value:
+            price_1 = str(round(float(deal[4][0].prices[deal[2] + deal[3]]), 2))
+        else:
+            price_1 = '-'
+
+        skin_in_data = tk.Label(frame, image=skin_out_1,
+                                text='   PRICE\n   ' + price_1 + '$\n   Q: ' + skin_out_q,
+                                font=('Montserrat Black', 16), fg='red4', background='brown1', width=216, height=106,
+                                compound='left')
+        skin_in_data.place(x=591, y=390)
+
+    if len(deal[4]) >= 2:
+        skin_out_2 = get_n_resize(deal[4][1].weapon + ' ' + deal[4][1].name)
+
+        if deal[4][1].prices[deal[3]] not in invalid_value:
+            price_2 = str(round(float(deal[4][1].prices[deal[2] + deal[3]]), 2))
+        else:
+            price_2 = '-'
+
+        skin_in_data = tk.Label(frame, image=skin_out_2,
+                                text='   PRICE\n   ' + price_2 + '$\n   Q: ' + skin_out_q,
+                                font=('Montserrat Black', 16), fg='red4', background='brown1', width=216, height=106,
+                                compound='left')
+        skin_in_data.place(x=591, y=505)
+
+    if len(deal[4]) >= 3:
+        skin_out_3 = get_n_resize(deal[4][2].weapon + ' ' + deal[4][2].name)
+
+        if deal[4][2].prices[deal[3]] not in invalid_value:
+            price_3 = str(round(float(deal[4][2].prices[deal[2] + deal[3]]), 2))
+        else:
+            price_3 = '-'
+
+        skin_in_data = tk.Label(frame, image=skin_out_3,
+                                text='   PRICE\n   ' + price_3 + '$\n   Q: ' + skin_out_q,
+                                font=('Montserrat Black', 16), fg='red4', background='brown1', width=216, height=106,
+                                compound='left')
+        skin_in_data.place(x=591, y=620)
+
+    # endregion
+
+    # region TOTAL
+
+    max_loss = alg.cheapest_skin(deal[4], deal[2] + deal[3])
+    min_win = alg.expensive_skin(deal[4], deal[2] + deal[3])
+
+    select_risk = tk.Text(frame, font=('Montserrat Black', 22), bd=0, fg='gray34', bg='gray80', width=15, height=3)
+    select_risk.tag_configure('center', justify='center')
+    select_risk.insert('1.0', 'TOTAL: ' + str(round(float(price_0) * 10, 2)) + '$\n'
+                       + 'MAX LOSS: ' + max_loss.prices[deal[2] + deal[3]] + '$\n'
+                       + 'MAX WIN: ' + min_win.prices[deal[2] + deal[3]] + '$')
+    select_risk.tag_add('center', '1.0', 'end')
+    select_risk.place(x=265, y=617)
+    # endregion
+
+    # eroare intentionata care nu lasa functia sa se incheie
+    # daca s-ar incheia, variabilele locale pentru poze s-ar sterge, si implicit
+    # s-ar sterge si din interfata
+    a = ''
+    b = float(a)
+
+    #TODO:
+    #   - fac calculele relevante pentru max loss si max win
+    #   - sa fac butoanele de risk inactive pana nu exista fisierul Skin_prices.xlsx
 
 window = tk.Tk()
 window.geometry('825x750')
@@ -120,7 +217,7 @@ logo_panel = tk.Label(frame, image=logo, bd=0)
 logo_panel.place(x=258, y=13)
 
 
-#region Main Buttons
+# region Main Buttons
 
 btn_UpdateDB = tk.Button(frame, text="EXTRACT\nNAMES", image=pixel, bd=0, background='gray63', fg='gray15',
                          font=('Montserrat Black', 12), width=153, height=63, compound="c")
@@ -129,7 +226,6 @@ btn_UpdateDB.place(x=12, y=208)
 btn_UpdatePrices = tk.Button(frame, text="EXTRACT\nPRICES", image=pixel, bd=0, background='gray63', fg='gray15',
                              font=('Montserrat Black', 12), width=153, height=63, compound="c")
 btn_UpdatePrices.place(x=12, y=284)
-
 
 # daca fisierul Skin_names nu exista (si deci functia de pe btn-ul update prices nu are putea functiona
 # dezactivez butonul
@@ -140,15 +236,17 @@ if not path.exists('Files/Skin_names.xlsx'):
 btn_UpdateDB.bind("<Button-1>", extract_skins)
 btn_UpdatePrices.bind("<Button-1>", extract_prices)
 
-#endregion
+# endregion
 
 
+# region Log Viewer Window
 displayVar = tk.StringVar()
 # justify = left (aliniez textul la stanga)
 # anchor = 'sw' (ultimul text introdus ramane in josul paginii si oricum redimensionez Label-ul
 #               el ramane jos de tot, fara a da resize la fereastra)
 displayLab = tk.Label(frame, textvariable=displayVar, height=10, width=55, justify='left', anchor='sw')
 displayLab.place(x=178, y=208)
+#endregion
 
 
 # region Select Risk Level.txt
@@ -167,74 +265,23 @@ select_risk.place(x=575, y=205)
 btn_risk1 = tk.Button(frame, text="1", image=pixel, relief='solid', bd=0, background='gold', fg='chocolate2',
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk1.place(x=610, y=310)
+btn_risk1.bind("<Button-1>", lambda event, risk=1: search_offer(event, risk))
+
 btn_risk2 = tk.Button(frame, text="2", image=pixel, relief='solid', bd=0, background='gold', fg='chocolate2',
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk2.place(x=670, y=310)
+btn_risk2.bind("<Button-1>", lambda event, risk=2: search_offer(event, risk))
+
 btn_risk3 = tk.Button(frame, text="3", image=pixel, relief='solid', bd=0, background='gold', fg='chocolate2',
                       font=('Montserrat Black', 19), width=35, height=35, compound="c")
 btn_risk3.place(x=730, y=310)
+btn_risk3.bind("<Button-1>", lambda event, risk=3: search_offer(event, risk))
 
 # endregion
-
 
 bg_trade_up = tk.Label(frame, image=pixel, background='gray80', width=825, height=360)
 bg_trade_up.place(x=0, y=379)
 
-
-skin = cls.Skin()
-skin.prices.append(0)
-skin.prices.append(125.3154332)
-# i = indicele calitatii skin-ului
-i = 1
-
-
-# skin_in trebuie sa fie global, altfel se va sterge poza dupa executarea functiei, si va ramane label-ul gol
-skin_in = get_n_resize('AK-47 Aquamarine Revenge')
-# afisez cele 10 skinuri
-print_trade_in(skin_in)
-# afisez date despre skinul de cumparat
-skin_in_data = tk.Label(frame, image=skin_in, text='   PRICE\n   ' + str(round(skin.prices[i], 2)) + '$\n   Q: ' + alg.num_to_quality(i),
-                        font=('Montserrat Black', 16), fg='Dark green', background='SpringGreen3', width=221, height=108, compound='left')
-skin_in_data.place(x=15, y=620)
-
-#region skin_out
-
-skin_out_1 = get_n_resize('AK-47 Aquamarine Revenge')
-skin_in_data = tk.Label(frame, image=skin_out_1, text='   PRICE\n   ' + str(round(skin.prices[i], 2)) + '$\n   Q: ' + alg.num_to_quality(i),
-                        font=('Montserrat Black', 16), fg='red4', background='brown1', width=216, height=106, compound='left')
-skin_in_data.place(x=591, y=390)
-
-skin_out_2 = get_n_resize('AK-47 Aquamarine Revenge')
-skin_in_data = tk.Label(frame, image=skin_out_2, text='   PRICE\n   ' + str(round(skin.prices[i], 2)) + '$\n   Q: ' + alg.num_to_quality(i),
-                        font=('Montserrat Black', 16), fg='red4', background='brown1', width=216, height=106, compound='left')
-skin_in_data.place(x=591, y=505)
-
-skin_out_3 = get_n_resize('AK-47 Aquamarine Revenge')
-skin_in_data = tk.Label(frame, image=skin_out_3, text='   PRICE\n   ' + str(round(skin.prices[i], 2)) + '$\n   Q: ' + alg.num_to_quality(i),
-                        font=('Montserrat Black', 16), fg='red4', background='brown1', width=216, height=106, compound='left')
-skin_in_data.place(x=591, y=620)
-
-#endregion
-
-#region TOTAL
-select_risk = tk.Text(frame, font=('Montserrat Black', 22), bd=0, fg='gray34', bg='gray80', width=15, height=3)
-select_risk.tag_configure('center', justify='center')
-select_risk.insert('1.0', 'TOTAL: ' + str(round(skin.prices[i]*10, 2)) + '$\n'
-                                    + 'MAX LOSS: ' + '100' + '$\n'
-                                    + 'MIN WIN: ' + '202' + '$')
-select_risk.tag_add('center', '1.0', 'end')
-select_risk.place(x=265, y=617)
-#endregion
-
-# TODO:
-#   - la catergoria de get offer sa am 3 butoane care sa reprezinte
-#   - gradul de risc pentru trade-ul care urmeaza sa pice
-#    1 = spre 0 pierdere
-#    3 = sanse la castiguri mari, dar si la pierderi mari
-
-
 Cases = []
-
-
 
 window.mainloop()
