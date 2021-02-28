@@ -116,8 +116,6 @@ def generate_offer(Cases, procent_min_win, procent_max_loss):
                     # calitate, sau cu una mai proasta.
                     float_chance = random.randint(0, 1)
 
-                    #float_chance = 0
-
                     cheap_skin_2 = cheapest_skin(case.byRarity[index_0], i + float_chance)
                     expensive_skin_2 = expensive_skin(case.byRarity[index_0], i + float_chance)
                     if cheap_skin_2 != -1 and expensive_skin_2 != -1:
