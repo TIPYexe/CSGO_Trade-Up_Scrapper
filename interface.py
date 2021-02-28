@@ -40,6 +40,7 @@ def extract_prices(event):
     # dezactivez butonul
     btn_UpdatePrices['state'] = 'disabled'
     btn_UpdatePrices.unbind("<Button-1>")
+
     # curat fereastra de log
     displayVar.set('')
     window.update()
@@ -71,7 +72,6 @@ def extract_prices(event):
 
     btn_risk3.config(bg='gold')
     btn_risk3['state'] = 'active'
-
     btn_risk3.bind("<Button-1>", lambda event, risk=3: search_offer(event, risk))
 
 
@@ -212,9 +212,6 @@ pixel = tk.PhotoImage(width=1, height=1)
 
 frame = tk.Frame(bg='gray15', height=750, width=930)
 frame.pack()
-
-# log_viewer = tk.Frame(master=window, weight=354.49, height=160.93, bg='white')
-# log_viewer.pack(fill=tk.Y, side=tk.RIGHT)
 
 image = Image.open(path_logo)
 logo = ImageTk.PhotoImage(image)
